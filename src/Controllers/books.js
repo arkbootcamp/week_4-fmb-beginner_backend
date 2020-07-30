@@ -1,24 +1,33 @@
 const booksModel = require("../Models/books");
+const formResponse = require("../Helpers/Forms/formResponse");
 
 const booksController = {
   getAllBooks: (_, res) => {
     booksModel
       .getAllBooks()
       .then((data) => {
-        res.json(data);
+        formResponse.success(res, data);
       })
       .catch((err) => {
-        res.json(err);
+        formResponse.error(res, err);
       });
   },
   postNewBook: (req, res) => {
     booksModel
       .postNewBook(req.body)
       .then((data) => {
-        res.json(data);
+        const responseData = {
+          ...req.body,
+          id: data.insertId,
+          created_at: Date.now(),
+          updated_at: Date.now(),
+        };
+        console.log(responseData);
+        formResponse.success(res, responseData);
       })
       .catch((err) => {
-        res.status(500).json(err);
+        console.log(err);
+        formResponse.error(res, err);
       });
   },
   searchBooks: (req, res) => {
