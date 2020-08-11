@@ -48,6 +48,20 @@ const booksModel = {
       });
     });
   },
+  getPaginatedBooks: (page, limit) => {
+    return new Promise((resolve, reject) => {
+      const offset = (page - 1) * limit;
+      const queryString =
+        "SELECT books.id AS book_id, books.title AS book_title, books.author AS book_author, genres.genre AS book_genre, books.created_at, books.updated_at FROM books JOIN genres ON books.genre_id = genres.id  ORDER BY books.id ASC LIMIT ? OFFSET ?";
+      db.query(queryString, [Number(limit), offset], (err, data) => {
+        if (!err) {
+          resolve(data);
+        } else {
+          reject(err);
+        }
+      });
+    });
+  },
 };
 
 module.exports = booksModel;

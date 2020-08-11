@@ -1,3 +1,5 @@
+const _ = require("underscore");
+
 const booksModel = require("../Models/books");
 const formResponse = require("../Helpers/Forms/formResponse");
 
@@ -30,8 +32,16 @@ const booksController = {
         formResponse.error(res, err);
       });
   },
-  searchBooks: (req, res) => {
-    res.status(200).send(req.query);
+  searchBooks: ({ route, params }, res) => {
+    console.log("search");
+    const isParamsEmpty = _.isEmpty(params);
+    const path = route.path;
+    const data = {
+      path,
+      isParamsEmpty,
+      params,
+    };
+    res.send(data);
   },
   getBookById: (req, res) => {
     booksModel
@@ -41,6 +51,17 @@ const booksController = {
       })
       .catch((err) => {
         res.status(500).json(err);
+      });
+  },
+  getPaginatedBooks: (req, res) => {
+    const { page, limit } = req.query;
+    booksModel
+      .getPaginatedBooks(page, limit)
+      .then((data) => {
+        formResponse.pagination(req, res, data);
+      })
+      .catch((err) => {
+        formResponse.error(res, err);
       });
   },
 };
